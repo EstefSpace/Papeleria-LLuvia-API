@@ -51,7 +51,7 @@ func main() {
 
 	v1 := router.Group("/v1")
 
-	v1.GET("/view-products", func(c *gin.Context) {
+	v1.GET("/product", func(c *gin.Context) {
 		products, err := db.ViewProducts(client)
 
 		// Este es el manejo de errores, si hay un error que retorne algo
@@ -75,7 +75,7 @@ func main() {
 		})
 	})
 
-	v1.DELETE("/delete-product", func(c *gin.Context) {
+	v1.DELETE("/product", func(c *gin.Context) {
 		var deleteProduct models.DeleteProduct
 
 		err := c.ShouldBindJSON(&deleteProduct)
@@ -96,6 +96,13 @@ func main() {
 			return
 		}
 
+		if product.DeletedCount == 0 {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "there was an error trying to delete the product, please verify that the ID entered is correct.",
+			})
+			return
+		}
+
 		c.JSON(http.StatusOK, gin.H{
 			"id":      deleteProduct.ID,
 			"info":    product,
@@ -103,7 +110,7 @@ func main() {
 		})
 	})
 
-	v1.POST("/new-product", func(c *gin.Context) {
+	v1.POST("/product", func(c *gin.Context) {
 
 		var product models.Product
 

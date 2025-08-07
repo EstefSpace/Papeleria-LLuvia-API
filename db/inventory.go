@@ -45,7 +45,7 @@ func DeleteProduct(client *mongo.Client, id string) (*mongo.DeleteResult, error)
 	return result, nil
 }
 
-func NewProduct(client *mongo.Client, name string, id *string, price, amount int) error {
+func NewProduct(client *mongo.Client, name string, id *string, price float64, amount int) error {
 	coll := client.Database("pl-db").Collection("products")
 
 	product := models.Product{
