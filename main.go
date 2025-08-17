@@ -21,6 +21,9 @@ import (
 func main() {
 
 	router := gin.Default()
+
+	// Esto es para que desde cualquier parte se acepten solicitudes GET, POST, DELETE, etc.
+	// Un poco peligroso pero para eso esta la API KEY.
 	router.Use(cors.Default())
 
 	// Cargamos las variables de entorno
@@ -146,6 +149,44 @@ func main() {
 		})
 	})
 
+	/* Endpoints de Ventas */
+
+	v1.POST("/sale", func(c *gin.Context) {
+
+		var sale models.Sale
+
+		err := c.ShouldBindJSON(&sale)
+
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Please enter a valid body",
+			})
+			return
+		}
+
+		id, err := gonanoid.New()
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
+		}
+
+		err = db.NewSale(client, &id, sale.User, sale.Total, sale.Date, sale.Products)
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"message": "The sale was paid successfully",
+			"id":      id,
+		})
+
+	})
 	router.Run(port)
 
 }

@@ -1,7 +1,8 @@
 package models
 
 type ClientAPI struct {
-	ApiKey string
+	ApiKey    string
+	WebClient string
 }
 
 type User struct {
